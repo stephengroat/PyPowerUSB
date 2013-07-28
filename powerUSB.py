@@ -24,8 +24,10 @@ def handle_signals(signum=3,func=None):
     """
     signal manager
     """
+    libPowerUSB.stop_watchdog()
     libPowerUSB.release()
     sys.exit(0)
+
 signal.signal(signal.SIGINT,handle_signals)
 signal.signal(signal.SIGTERM,handle_signals)
 
