@@ -211,3 +211,10 @@ def set_ports_defaults(port1=None,port2=None,port3=None):
     for msg in msgs:
         send_msg(msg)
 
+def release():
+    """Needs to be called before closing application, to release the interface.
+    Will be refactored someday when using a real manager.
+    :returns: Nothing
+
+    """
+    handle.releaseInterface()
