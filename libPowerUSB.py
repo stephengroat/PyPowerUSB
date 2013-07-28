@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import usb
 bus=usb.busses()
 bus[0].devices[0].idVendor #should be 1240L
