@@ -15,18 +15,18 @@ parser.add_option("-p", "--period",
 
 (options, args) = parser.parse_args()
 
-print options
-
 if options.init_watchdog:
     libPowerUSB.stop_watchdog()
     libPowerUSB.start_watchdog(options.period)
 
-def handle_signals(self):
+def handle_signals():
     """
     setup signal managers
     """
     signal.signal(signal.SIGINT,libPowerUSB.release)
     signal.signal(signal.SIGTERM,libPowerUSB.release)
+
+handle_signals()
 
 while True:
     libPowerUSB.send_heartbeat()
