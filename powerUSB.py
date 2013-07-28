@@ -4,6 +4,7 @@
 import libPowerUSB
 import time
 import signal
+import sys
 
 from optparse import OptionParser
 parser = OptionParser()
@@ -19,12 +20,14 @@ if options.init_watchdog:
     libPowerUSB.stop_watchdog()
     libPowerUSB.start_watchdog(options.period)
 
-def handle_signals():
+def handle_signals(signum=3,func=None):
     """
-    setup signal managers
+    signal manager
     """
-    signal.signal(signal.SIGINT,libPowerUSB.release)
-    signal.signal(signal.SIGTERM,libPowerUSB.release)
+    libPowerUSB.release()
+    sys.exit(0)
+signal.signal(signal.SIGINT,handle_signals)
+signal.signal(signal.SIGTERM,handle_signals)
 
 handle_signals()
 
