@@ -29,8 +29,6 @@ def handle_signals(signum=3,func=None):
 signal.signal(signal.SIGINT,handle_signals)
 signal.signal(signal.SIGTERM,handle_signals)
 
-handle_signals()
-
 while True:
     libPowerUSB.send_heartbeat()
     time.sleep(options.period)
