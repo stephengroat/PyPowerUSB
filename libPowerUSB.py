@@ -160,9 +160,8 @@ def power_cycle_watchdog_port(time_off):
     assert type(time_off) is int
     assert time_off >= 0
     assert time_off <= 255
-    msg = POWER_CYCLE + chr(time_off)p
+    msg = POWER_CYCLE + chr(time_off)
     send_msg(msg)
-
 
 def planned_poweroff(time_to_off,time_to_on):
     #time_to_off: minutes before turning off the watchdog port, <=255 minutes
