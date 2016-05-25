@@ -5,11 +5,12 @@ class pyPwrUSB:
 
     Example:
         import pwrusb
-        
-        pwrusb=pwrusb.pyPwrUSB()
-        pwrusb.set_ports(port1=True)
-        pwrusb.set_ports(port1=False)
 
+        pwrusb=pwrusb.pyPwrUSB()		
+        pwrusb.set_ports(port1=True)		
+        pwrusb.set_ports(port1=False)
+        print pwr.get_firmware()
+        
     """
     def __init__(self):
         devPwrUsb=None
@@ -99,7 +100,7 @@ class pyPwrUSB:
     POWERUSB_MODELS={
         0: None,
         1: "Basic",
-    2: "Digital IO",
+        2: "Digital IO",
         3: "Watchdog",
         4: "Smart Pro"
         }
@@ -113,21 +114,21 @@ class pyPwrUSB:
 
     def send_msg(self,msg):
         padding = chr(0xFF) * (self.BUF_WRT - len(msg)) #usually, 63 chars
-        self.handle.bulkWrite(1,msg+padding,200)
+        self.handle.bulkWrite(0x01,msg+padding,200)
 
     def _read_msg(self,msg,reply_len):
-        send_msg(msg)
-        return self.handle.bulkRead(1,64,200)[0:reply_len] #significant reply
+        self.send_msg(msg)
+        return self.handle.bulkRead(0x81,64,200)[0:reply_len] #significant reply
 
     def read_bool(self,msg):
         thebool=self._read_msg(msg,1)[0]
         return bool(thebool)
 
     def get_ports(self):
-        return self.read_bool(READ_P1),read_bool(READ_P2), read_bool(READ_P3)
+        return self.read_bool(self.READ_P1),self.read_bool(self.READ_P2),self.read_bool(self.READ_P3)
 
     def get_ports_defaults(self):
-        return self.read_bool(READ_P1_PWRUP),read_bool(READ_P2_PWRUP), read_bool(READ_P3_PWRUP)
+        return self.read_bool(self.READ_P1_PWRUP),self.read_bool(self.READ_P2_PWRUP),self.read_bool(self.READ_P3_PWRUP)
 
     def read_ints(self,msg,length):
         return self._read_msg(msg,length)
