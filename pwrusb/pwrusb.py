@@ -5,6 +5,10 @@ class pyPwrUSB:
 
     Example:
         import pwrusb
+        
+        pwrusb=pwrusb.pyPwrUSB()
+        pwrusb.set_ports(port1=True)
+        pwrusb.set_ports(port1=False)
 
     """
     def __init__(self):
