@@ -21,7 +21,7 @@ class pyPwrUSB:
             for dev in devices:
                 if dev.idVendor == 1240 and dev.idProduct == 63:
                     devPwrUsb = dev
-        if dev is not None:
+        if devPwrUsb is not None:
             self.handle=devPwrUsb.open()
             #try:
             #    self.handle.detachKernelDriver(0)
