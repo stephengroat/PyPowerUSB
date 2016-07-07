@@ -166,10 +166,10 @@ class PyPwrUSB:
         return self.POWERUSB_MODELS[self._read(self.commands['READ_MODEL'])]
 
     def get_current(self):
-        return self._read_int(self.commands['READ_CURRENT'], 2)  # in milliamps
+        return self._read(self.commands['READ_CURRENT'])  # in milliamps
 
     def get_total_current(self):
-        total_current = self._read_int(self.commands['READ_CURRENT_CUM'], 4)
+        total_current = self._read(self.commands['READ_CURRENT_CUM'])
         return total_current  # in amps/minute
 
     def reset_total_current(self):
