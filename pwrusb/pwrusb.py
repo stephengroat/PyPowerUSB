@@ -8,8 +8,8 @@ class PyPwrUSB:
         import pwrusb
 
         pwrusb=pwrusb.pyPwrUSB()
-        pwrusb.set_ports(port1=True)
-        pwrusb.set_ports(port1=False)
+        pwrusb.set_port(1, 'ON')
+        pwrusb.set_port(2, 'OFF', default=True)
         print pwr.get_firmware()
 
     """
@@ -59,7 +59,7 @@ class PyPwrUSB:
 
         'READ_P1': [chr(0xa1), bool],
         'READ_P2': [chr(0xa2), bool],
-        'READ_P3': [bool, chr(0xac)],
+        'READ_P3': [chr(0xac), bool],
 
         'READ_P1_PWRUP': [chr(0xa3), bool],
         'READ_P2_PWRUP': [chr(0xa4), bool],
@@ -146,16 +146,17 @@ class PyPwrUSB:
         if msg not in self.commands:
             raise Exception('Invalid message')
         if self.commands[msg][1] == bool:
-            return self._read_bool(msg)
+            return self._read_bool(msg[0])
         elif self.commands[msg][1] == int:
-            return self._read_int(msg, self.commands[msg][2])
+            return self._read_int(msg[0], self.commands[msg][2])
 
-    def get_ports(self):
-        return self._read(self.commands['READ_P1']), self._read(self.commands['READ_P2']), self._read(self.commands['READ_P3'])
-
-    def get_ports_defaults(self):
-        return self._read(self.commands['READ_P1_PWRUP']), self._read(self.commands['READ_P2_PWRUP']),\
-               self._read(self.commands['READ_P3_PWRUP'])
+    def get_port(self, port_number, default=False):
+        if 1 <= port_number < 3:
+            raise Exception('Invalid port number')
+        if default:
+            return self._read(self.commands['READ_P' + port_number + '_PWRUP'])
+        else:
+            return self._read(self.commands['READ_P' + port_number])
 
     def get_firmware(self):
         ints = self._read_ints(self.commands['READ_FIRMWARE_VER'], 2)
@@ -216,42 +217,15 @@ class PyPwrUSB:
         msg = self.SHUTDOWN_OFFON + chr(time_to_off) + chr(time_on_1) + chr(time_on_2)
         self._send_msg(msg)
 
-    def set_ports(self, defaults=False, port1=None, port2=None, port3=None):
-        msgs = []
-        if port1 is True:
-            if defaults:
-                msgs.append(self.DEFON_PORT1)  # turn on port 1
-            msgs.append(self.commands[])  # turn on port 1
-        elif port1 is False:
-
-            msgs.append(self.OFF_PORT1)  # turn off port 1
-        if port2 is True:
-            msgs.append(self.ON_PORT2)  # turn on port 2
-        elif port2 is False:
-            msgs.append(self.OFF_PORT2)  # turn off port 2
-        if port3 is True:
-            msgs.append(self.ON_PORT3)  # turn on port 3
-        elif port3 is False:
-            msgs.append(self.OFF_PORT3)  # turn off port 3
-        for msg in msgs:
-            self._send_msg(msg)
-
-    def set_ports_defaults(self, port1=None, port2=None, port3=None):
-        msgs = []
-        if port1 is True:
-            msgs.append(self.DEFON_PORT1)  # turn on port 1
-        elif port1 is False:
-            msgs.append(self.DEFOFF_PORT1)  # turn off port 1
-        if port2 is True:
-            msgs.append(self.DEFON_PORT2)  # turn on port 2
-        elif port2 is False:
-            msgs.append(self.DEFOFF_PORT2)  # turn off port 2
-        if port3 is True:
-            msgs.append(self.DEFON_PORT3)  # turn on port 3
-        elif port3 is False:
-            msgs.append(self.DEFOFF_PORT3)  # turn off port 3
-        for msg in msgs:
-            self._send_msg(msg)
+    def set_port(self, port_number, status, default=False):
+        if 1 <= port_number < 3:
+            raise Exception('Invalid port number')
+        if status not in ['ON', 'OFF']:
+            raise Exception('Invalid status')
+        if default:
+            return self._send_msg('SET_PORT' + port_number + '_DEFAULT_' + status)
+        else:
+            return self._send_msg('SET_PORT' + port_number + '_' + status)
 
     def __del__(self):
         self.handle.releaseInterface()
