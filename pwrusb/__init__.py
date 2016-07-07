@@ -1,5 +1,5 @@
 """PowerUSB"""
 
-__all__ = [ 'pyPwrUSB' ]
+__all__ = [ 'PyPwrUSB' ]
 
-from pwrusb import pyPwrUSB
+from pwrusb import PyPwrUSB
