@@ -169,8 +169,7 @@ class PyPwrUSB:
         return self._read(self.commands['READ_CURRENT'])  # in milliamps
 
     def get_total_current(self):
-        total_current = self._read(self.commands['READ_CURRENT_CUM'])
-        return total_current  # in amps/minute
+        return self._read(self.commands['READ_CURRENT_CUM'])  # in amps/minute
 
     def reset_total_current(self):
         self._send_msg(self.commands['RESET_CURRENT_COUNT'])
@@ -183,8 +182,7 @@ class PyPwrUSB:
             assert type(param) is int
             assert param >= 0
             assert param <= 255
-        msg = self.commands['START_WDT'] + chr(0) + chr(expected_interval) + chr(allowed_misses) + chr(offtime)
-        self._send_msg(msg)
+        self._send_msg(self.commands['START_WDT'] + chr(0) + chr(expected_interval) + chr(allowed_misses) + chr(offtime))
 
     def stop_watchdog(self):
         self._send_msg(self.commands['STOP_WDT'])
@@ -194,7 +192,7 @@ class PyPwrUSB:
         if status not in self.WATCHDOG_STATUS:
             raise Exception('Invalid watchdog status')
         else
-            return status
+            return self.WATCHDOG_STATUS[status]
 
     def send_heartbeat(self):
         self._send_msg(self.commands['HEART_BEAT'])
@@ -203,8 +201,7 @@ class PyPwrUSB:
         assert type(time_off) is int
         assert time_off >= 0
         assert time_off <= 255
-        msg = self.commands['POWER_CYCLE'] + chr(time_off)
-        self._send_msg(msg)
+        self._send_msg(self.commands['POWER_CYCLE'] + chr(time_off))
 
     def planned_poweroff(self, time_to_off, time_to_on):
         # time_to_off: minutes before turning off the watchdog port, <=255 minutes
@@ -217,8 +214,7 @@ class PyPwrUSB:
         assert time_to_on <= 255
         time_on_1 = (time_to_on >> 8) & 0x00ff
         time_on_2 = time_to_on & 0x00ff
-        msg = self.commands['SHUTDOWN_OFFON'] + chr(time_to_off) + chr(time_on_1) + chr(time_on_2)
-        self._send_msg(msg)
+        self._send_msg(self.commands['SHUTDOWN_OFFON'] + chr(time_to_off) + chr(time_on_1) + chr(time_on_2))
 
     def set_port(self, port_number, status, default=False):
         if 1 <= port_number < 3:
