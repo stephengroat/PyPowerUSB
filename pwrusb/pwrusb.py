@@ -70,7 +70,29 @@ class PyPwrUSB:
 
         'READ_CURRENT': [chr(0xb1), int, 2],
         'READ_CURRENT_CUM': [chr(0xb2), int, 4],
-        'RESET_CURRENT_COUNT': chr(0xb3)
+        'RESET_CURRENT_COUNT': chr(0xb3),
+        
+        'SET_MODE': chr(0xa8),
+        'READ_MODE': chr(0xa9),
+
+        # Digital IO
+        'SET_IO_DIRECTION': chr(0xd1),
+        'SET_IO_OUTPUT': chr(0xd3),
+        'GET_IO_INPUT': chr(0xd4),
+        'SET_IO_CLOCK': chr(0xd5),
+        'GET_IO_OUTPUT': chr(0xd6),
+        'SET_IO_TRIGGER': chr(0xd7),
+        'SET_IO_SETPLC': chr(0xd8),
+        'SET_IO_GETPLC': chr(0xd9),
+        'SET_IO_CLRPLC': chr(0xda),
+
+        # Watchdog
+        'START_WDT': chr(0x90),
+        'STOP_WDT': chr(0x91),
+        'POWER_CYCLE': chr(0x92),
+        'READ_WDT': [chr(0x93), int, 1]  # -> return the status.
+        'HEART_BEAT': chr(0x94),
+        'SHUTDOWN_OFFON': chr(0x95)
     }
 
     WRITE_OVERLOAD = chr(0xb4)  # TODO: what is this for ?
@@ -78,28 +100,6 @@ class PyPwrUSB:
     SET_CURRENT_RATIO = chr(0xb6)  # TODO: what is this for ?
     RESET_BOARD = chr(0xc1)  # TODO: what is this for ?
     SET_CURRENT_OFFSET = chr(0xc2)  # TODO: what is this for ?
-
-    SET_MODE = chr(0xa8)
-    READ_MODE = chr(0xa9)
-
-    # Digital IO
-    SET_IO_DIRECTION = chr(0xd1)
-    SET_IO_OUTPUT = chr(0xd3)
-    GET_IO_INPUT = chr(0xd4)
-    SET_IO_CLOCK = chr(0xd5)
-    GET_IO_OUTPUT = chr(0xd6)
-    SET_IO_TRIGGER = chr(0xd7)
-    SET_IO_SETPLC = chr(0xd8)
-    SET_IO_GETPLC = chr(0xd9)
-    SET_IO_CLRPLC = chr(0xda)
-
-    # Watchdog
-    START_WDT = chr(0x90)
-    STOP_WDT = chr(0x91)
-    POWER_CYCLE = chr(0x92)
-    READ_WDT = chr(0x93)  # -> return the status.
-    HEART_BEAT = chr(0x94)
-    SHUTDOWN_OFFON = chr(0x95)
 
     # Models
     POWERUSB_MODELS = {
@@ -183,24 +183,27 @@ class PyPwrUSB:
             assert type(param) is int
             assert param >= 0
             assert param <= 255
-        msg = self.START_WDT + chr(0) + chr(expected_interval) + chr(allowed_misses) + chr(offtime)
+        msg = self.commands['START_WDT'] + chr(0) + chr(expected_interval) + chr(allowed_misses) + chr(offtime)
         self._send_msg(msg)
 
     def stop_watchdog(self):
-        self._send_msg(self.STOP_WDT)
+        self._send_msg(self.commands['STOP_WDT'])
 
     def get_watchdog_status(self):
-        status = self._read_int(self.READ_WDT, 1)
-        return status, self.WATCHDOG_STATUS[status]
+        status = self._read(self.commands['READ_WDT'])
+        if status not in self.WATCHDOG_STATUS:
+            raise Exception('Invalid watchdog status')
+        else
+            return status
 
     def send_heartbeat(self):
-        self._send_msg(self.HEART_BEAT)
+        self._send_msg(self.commands['HEART_BEAT'])
 
     def power_cycle_watchdog_port(self, time_off):
         assert type(time_off) is int
         assert time_off >= 0
         assert time_off <= 255
-        msg = self.POWER_CYCLE + chr(time_off)
+        msg = self.commands['POWER_CYCLE'] + chr(time_off)
         self._send_msg(msg)
 
     def planned_poweroff(self, time_to_off, time_to_on):
@@ -214,7 +217,7 @@ class PyPwrUSB:
         assert time_to_on <= 255
         time_on_1 = (time_to_on >> 8) & 0x00ff
         time_on_2 = time_to_on & 0x00ff
-        msg = self.SHUTDOWN_OFFON + chr(time_to_off) + chr(time_on_1) + chr(time_on_2)
+        msg = self.commands['SHUTDOWN_OFFON'] + chr(time_to_off) + chr(time_on_1) + chr(time_on_2)
         self._send_msg(msg)
 
     def set_port(self, port_number, status, default=False):
