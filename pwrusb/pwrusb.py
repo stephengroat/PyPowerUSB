@@ -198,9 +198,7 @@ class PyPwrUSB:
         self._send_msg(self.commands['HEART_BEAT'])
 
     def power_cycle_watchdog_port(self, time_off):
-        assert type(time_off) is int
-        assert time_off >= 0
-        assert time_off <= 255
+        assert type(time_off) is int and 0 <= time_off <= 255
         self._send_msg(self.commands['POWER_CYCLE'] + chr(time_off))
 
     def planned_poweroff(self, time_to_off, time_to_on):
@@ -222,9 +220,9 @@ class PyPwrUSB:
         if status not in ['ON', 'OFF']:
             raise Exception('Invalid status')
         if default:
-            return self._send_msg('SET_PORT' + port_number + '_DEFAULT_' + status)
+            return self._send_msg(self.commands['SET_PORT' + port_number + '_DEFAULT_' + status])
         else:
-            return self._send_msg('SET_PORT' + port_number + '_' + status)
+            return self._send_msg(self.commands['SET_PORT' + port_number + '_' + status])
 
     def __del__(self):
         self.handle.releaseInterface()
