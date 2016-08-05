@@ -6,7 +6,7 @@ setup(name='python-powerusb',
       version='0.0.1',
       author='Qualcomm Technologies, Inc.',
       author_email='sgroat@qti.qualcomm.com',
-      packages=['powerusb'],
+      packages=['pwrusb'],
       install_requires=[
             'usb'
       ]
