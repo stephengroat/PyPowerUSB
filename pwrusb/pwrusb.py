@@ -191,7 +191,7 @@ class PyPwrUSB:
         status = self._read(self.commands['READ_WDT'])
         if status not in self.WATCHDOG_STATUS:
             raise Exception('Invalid watchdog status')
-        else
+        else:
             return self.WATCHDOG_STATUS[status]
 
     def send_heartbeat(self):
