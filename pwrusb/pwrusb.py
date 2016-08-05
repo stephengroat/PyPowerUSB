@@ -90,7 +90,7 @@ class PyPwrUSB:
         'START_WDT': chr(0x90),
         'STOP_WDT': chr(0x91),
         'POWER_CYCLE': chr(0x92),
-        'READ_WDT': [chr(0x93), int, 1]  # -> return the status.
+        'READ_WDT': [chr(0x93), int, 1],  # -> return the status.
         'HEART_BEAT': chr(0x94),
         'SHUTDOWN_OFFON': chr(0x95)
     }
