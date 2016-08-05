@@ -215,14 +215,16 @@ class PyPwrUSB:
         self._send_msg(self.commands['SHUTDOWN_OFFON'] + chr(time_to_off) + chr(time_on_1) + chr(time_on_2))
 
     def set_port(self, port_number, status, default=False):
+        """
         if 1 >= port_number <= 3:
             raise Exception('Invalid port number')
+        """
         if status not in ['ON', 'OFF']:
             raise Exception('Invalid status')
         if default:
-            return self._send_msg(self.commands['SET_PORT' + port_number + '_DEFAULT_' + status])
+            return self._send_msg(self.commands['SET_PORT' + str(port_number) + '_DEFAULT_' + status])
         else:
-            return self._send_msg(self.commands['SET_PORT' + port_number + '_' + status])
+            return self._send_msg(self.commands['SET_PORT' + str(port_number) + '_' + status])
 
     def __del__(self):
         self.handle.releaseInterface()
